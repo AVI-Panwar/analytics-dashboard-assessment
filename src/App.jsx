@@ -3,6 +3,7 @@ import Papa from "papaparse"
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { Dashboard } from '@mui/icons-material'
 
 function App() {
   
@@ -93,7 +94,7 @@ function App() {
 
   return (
     <>
-      <h1>hello</h1>
+      <Dashboard makeDistribution={vehicleMakeDistribution} modelYearData={modelYearData} evTypeData={evTypeData} />
     </>
   )
 }
