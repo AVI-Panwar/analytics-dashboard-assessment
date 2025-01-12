@@ -28,15 +28,15 @@ import {
 import { Car, Battery, Zap, MapPin } from 'lucide-react';
   
   
-  const rangeData = [
-    { range: '0-50', count: 0 },
-    { range: '51-100', count: 2 },
-    { range: '101-150', count: 1 },
-    { range: '151-200', count: 0 },
-    { range: '201-250', count: 1 },
-    { range: '251-300', count: 4 },
-    { range: 'Unknown', count: 6 },
-  ];
+const rangeBrackets = [
+    { label: '0-50', max: 50 },
+    { label: '51-100', max: 100 },
+    { label: '101-150', max: 150 },
+    { label: '151-200', max: 200 },
+    { label: '201-250', max: 250 },
+    { label: '251-300', max: 300 },
+    { label: '>300', max: null }
+];
   
   const cityData = [
     { name: 'Seattle', value: 3 },
@@ -83,6 +83,34 @@ function Dashboard({makeDistribution,modelYearData,evTypeData, data,evTypeDistri
     });
     return uniqueCountries.size;
   };
+ 
+  const calculateRangeDistributionFlexible = (data, rangeBrackets) => {
+    const rangeDistribution = rangeBrackets.map(bracket => ({
+        range: bracket.label,
+        count: 0
+    }));
+
+    data.forEach(vehicle => {
+        const range = parseInt(vehicle['Electric Range']) || 0;
+        
+        for (let i = 0; i < rangeBrackets.length; i++) {
+            if (range <= rangeBrackets[i].max || 
+                (rangeBrackets[i].max === null && range > rangeBrackets[i - 1].max)) {
+                rangeDistribution[i].count++;
+                break;
+            }
+        }
+    });
+
+    return rangeDistribution;
+};
+  
+console.log(calculateRangeDistributionFlexible(data, rangeBrackets));
+
+
+
+
+
 
   const metrics = [
     {
@@ -251,7 +279,7 @@ function Dashboard({makeDistribution,modelYearData,evTypeData, data,evTypeDistri
             </Typography>
             <Box sx={{ flexGrow: 1, width: '100%' }}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={rangeData}>
+                <BarChart data={calculateRangeDistributionFlexible(data, rangeBrackets)}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="range" />
                   <YAxis />
@@ -296,37 +324,7 @@ function Dashboard({makeDistribution,modelYearData,evTypeData, data,evTypeDistri
         </Grid>
 
         {/* Utility Provider Distribution */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, height: 350, display: 'flex', flexDirection: 'column' }}>
-            <Typography variant="h6" gutterBottom>
-              Utility Provider Distribution
-            </Typography>
-            <Box sx={{ flexGrow: 1, width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={utilityData}
-                  layout="vertical"
-                  margin={{ top: 5, right: 30, left: 80, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" />
-                  <YAxis 
-                    type="category" 
-                    dataKey="name"
-                    width={80}
-                    style={{ fontSize: '12px' }}
-                  />
-                  <Tooltip />
-                  <Bar
-                    dataKey="value"
-                    fill={theme.palette.primary.main}
-                    radius={[0, 4, 4, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </Box>
-          </Paper>
-        </Grid>
+        
       </Grid>
     </Container>
   );
