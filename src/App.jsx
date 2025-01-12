@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react'
-import Papa from "papaparse"
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import Papa from 'papaparse';
 import './App.css'
-import { Dashboard } from '@mui/icons-material'
+import Dashboard from './pages/Dashboard';
+import Layout from './components/Layout';
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 
 function App() {
-  
   const [data, setData] = useState([]);
+
+  const [mode, setMode] = useState('light');
+
+
   useEffect(() => {
     const loadCSVData = async () => {
       try {
@@ -91,10 +94,50 @@ function App() {
     .sort((a, b) => b.value - a.value)
     .slice(0, 8);
 
+  
+  const theme = createTheme({
+    palette: {
+      mode,
+      primary: {
+        main: '#1976d2',
+      },
+      secondary: {
+        main: '#dc004e',
+      },
+      background: {
+        default: mode === 'light' ? '#f5f5f5' : '#121212',
+        paper: mode === 'light' ? '#ffffff' : '#1e1e1e',
+      },
+    },
+    shape: {
+      borderRadius: 8,
+    },
+    components: {
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            boxShadow: mode === 'light' 
+              ? '0px 2px 4px -1px rgba(0,0,0,0.05), 0px 4px 6px -1px rgba(0,0,0,0.05)'
+              : '0px 2px 4px -1px rgba(0,0,0,0.15), 0px 4px 6px -1px rgba(0,0,0,0.15)',
+          },
+        },
+      },
+    },
+  });
+
+  const toggleTheme = () => {
+    setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+  };
 
   return (
     <>
-      <Dashboard makeDistribution={vehicleMakeDistribution} modelYearData={modelYearData} evTypeData={evTypeData} />
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Layout toggleTheme={toggleTheme}>
+     
+        <Dashboard makeDistribution={vehicleMakeDistribution} modelYearData={modelYearData} evTypeData={evTypeData} data={data} evTypeDistribution={evTypeDistribution}/>
+      </Layout>
+    </ThemeProvider>
     </>
   )
 }
