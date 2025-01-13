@@ -124,7 +124,7 @@ function Layout({ children, toggleTheme }) {
             <AlignJustify size={24} />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            {selected}
+            Dashboard
           </Typography>
           <IconButton 
             onClick={toggleTheme} 
@@ -144,13 +144,13 @@ function Layout({ children, toggleTheme }) {
         component="nav"
         sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
       >
-        {/* Mobile drawer */}
+        
         <Drawer
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true, 
           }}
           sx={{
             display: { xs: 'block', md: 'none' },
@@ -164,7 +164,7 @@ function Layout({ children, toggleTheme }) {
           {drawer}
         </Drawer>
         
-        {/* Desktop drawer */}
+        
         <Drawer
           variant="permanent"
           sx={{

@@ -77,13 +77,15 @@ function Dashboard({makeDistribution,modelYearData,evTypeData, data,evTypeDistri
   }
 
   const getUniqueCountryCount = (data) => {
+    
     const uniqueCountries = new Set();
     data.forEach((item) => {
       uniqueCountries.add(item.County);
+      
     });
     return uniqueCountries.size;
   };
- 
+
   const calculateRangeDistributionFlexible = (data, rangeBrackets) => {
     const rangeDistribution = rangeBrackets.map(bracket => ({
         range: bracket.label,
@@ -107,7 +109,16 @@ function Dashboard({makeDistribution,modelYearData,evTypeData, data,evTypeDistri
   
 console.log(calculateRangeDistributionFlexible(data, rangeBrackets));
 
-
+const vehicleModelData = data.reduce((acc, curr) => {
+    const model = `${curr.Make} ${curr.Model}`;
+    const existing = acc.find(item => item.model === model);
+    if (existing) {
+      existing.count += 1;
+    } else {
+      acc.push({ model, count: 1 });
+    }
+    return acc;
+  }, []).sort((a, b) => b.count - a.count);
 
 
 
@@ -143,7 +154,7 @@ console.log(calculateRangeDistributionFlexible(data, rangeBrackets));
 
   return (
     <Container maxWidth="xlg" sx={{ py: 3 }}>
-      {/* Metrics Row */}
+      
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {metrics.map((metric) => (
           <Grid item xs={12} sm={6} md={3} key={metric.title}>
@@ -188,9 +199,9 @@ console.log(calculateRangeDistributionFlexible(data, rangeBrackets));
         ))}
       </Grid>
 
-      {/* Charts Grid */}
+      
       <Grid container spacing={3}>
-        {/* Vehicle Make Distribution */}
+        
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3, height: 400, display: 'flex', flexDirection: 'column' }}>
             <Typography variant="h6" gutterBottom>
@@ -218,7 +229,7 @@ console.log(calculateRangeDistributionFlexible(data, rangeBrackets));
           </Paper>
         </Grid>
 
-        {/* Model Year Trend */}
+        
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3, height: 400, display: 'flex', flexDirection: 'column' }}>
             <Typography variant="h6" gutterBottom>
@@ -243,7 +254,7 @@ console.log(calculateRangeDistributionFlexible(data, rangeBrackets));
           </Paper>
         </Grid>
 
-        {/* EV Type Distribution */}
+        
         <Grid item xs={12} sm={6} md={4}>
           <Paper sx={{ p: 3, height: 350, display: 'flex', flexDirection: 'column' }}>
             <Typography variant="h6" gutterBottom>
@@ -271,7 +282,7 @@ console.log(calculateRangeDistributionFlexible(data, rangeBrackets));
           </Paper>
         </Grid>
 
-        {/* Electric Range Distribution */}
+        
         <Grid item xs={12} sm={6} md={8}>
           <Paper sx={{ p: 3, height: 350, display: 'flex', flexDirection: 'column' }}>
             <Typography variant="h6" gutterBottom>
@@ -295,35 +306,38 @@ console.log(calculateRangeDistributionFlexible(data, rangeBrackets));
           </Paper>
         </Grid>
 
-        {/* City Distribution */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, height: 350, display: 'flex', flexDirection: 'column' }}>
+        
+        <Grid item xs={12} md={12}>
+          <Paper sx={{ p: 3, height: 550, display: 'flex', flexDirection: 'column' }}>
             <Typography variant="h6" gutterBottom>
-              City Distribution
+              Vehicle Distribution by Model
             </Typography>
             <Box sx={{ flexGrow: 1, width: '100%' }}>
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={cityData}
-                    innerRadius={50}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {cityData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
+                <BarChart data={vehicleModelData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="model" angle={-45} textAnchor="end" height={140} fontSize={10} />
+                  <YAxis />
                   <Tooltip />
-                  <Legend />
-                </PieChart>
+                  <Bar
+                    dataKey="count"
+                    fill={theme.palette.secondary.main}
+                    radius={[4, 4, 0, 0]}
+                  >
+                    {vehicleModelData.map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
               </ResponsiveContainer>
             </Box>
           </Paper>
-        </Grid>
+        </Grid>
 
-        {/* Utility Provider Distribution */}
+        
         
       </Grid>
     </Container>

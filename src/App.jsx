@@ -43,10 +43,10 @@ function App() {
   const reducerFunction = (acc, item) => {
     const evType = item['Electric Vehicle Type'];
 
-    //dynamic key intialization
+    
     acc[evType] = (acc[evType] || 0) + 1;
 
-    // {"Battery Electric Vehicle (BEV)":1, }
+    
     return acc;
   }
   const evTypeDistribution = data.reduce(reducerFunction, {});
